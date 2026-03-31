@@ -1,0 +1,14 @@
+{
+  "name": "public-telegram-bot-starter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Safe public Telegram bot starter without private business logic",
+  "engines": {
+    "node": ">=18.17"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  }
+}
