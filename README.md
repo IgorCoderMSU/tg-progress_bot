@@ -1,97 +1,128 @@
-# Public Telegram Bot Starter
+# Telegram-бот для заявок и консультаций по стройматериалам
 
-This folder is a **safe public package** for GitHub.
+Публичная и безопасная версия Telegram-бота для магазина стройматериалов.  
+Проект показывает архитектуру прикладного B2B-бота, который помогает клиенту не просто написать менеджеру, а быстро получить информацию по товару и оформить заявку.
 
-It is **not** a full copy of the production bot. Private catalog data, internal matching logic, supplier integrations, prompts, logs, and runtime state are intentionally excluded.
+## О проекте
 
-## What is included
+Бот предназначен для магазина строительных и изоляционных материалов.  
+Основная идея проекта: сократить путь клиента от карточки товара до заявки, счёта или уточнения технических деталей.
 
-- a minimal long-polling Telegram bot on Node.js
-- inline menu buttons
-- a simple manager handoff flow
-- local runtime state storage
-- a clean `.env.example`
-- a publishing checklist
+В рабочем сценарии пользователь может перейти в бота:
+- с сайта по кнопке в карточке товара
+- вручную через Telegram
+- из общего меню без привязки к конкретной позиции
 
-## What is intentionally not included
+После этого бот помогает:
+- посмотреть информацию по товару
+- получить технические характеристики
+- начать оформление счёта
+- уточнить условия доставки
+- передать вопрос менеджеру
 
-- real product catalog data
-- supplier parsers and document enrichment
-- recommendation logic for kits, standards, or regulations
-- business-specific text and internal sales logic
-- any API keys, chat ids, tokens, or private exports
+## Какие задачи решает бот
 
-## Quick start
+Проект закрывает несколько типовых задач интернет-магазина стройматериалов:
 
-Requirements:
+1. Быстрый вход с сайта в Telegram по конкретному товару  
+   Пользователь переходит из карточки товара сразу в сценарий по нужной позиции.
 
-- Node.js 18+
+2. Снижение нагрузки на менеджера  
+   Бот собирает базовые вводные до подключения человека:
+   - какой товар нужен
+   - количество
+   - нужна ли доставка
+   - контакт
+   - тип клиента
 
-Setup:
+3. Ускорение оформления счёта  
+   Пользователь проходит по шагам и формирует заявку в структурированном виде.
 
-```powershell
-cd GITHUB
-Copy-Item .env.example .env
-```
+4. Стандартизация первого контакта  
+   Вместо хаотичных сообщений бот собирает понятную и пригодную для обработки заявку.
 
-Fill `.env` with your own values:
+5. Единая точка входа для консультации  
+   Пользователь может не только запросить счёт, но и оставить вопрос или передать обращение менеджеру.
 
-- `TELEGRAM_BOT_TOKEN`
-- `LEAD_RECIPIENT_CHAT_ID`
-- `BOT_USERNAME`
+## Основные сценарии
 
-Run:
+### 1. Старт по товару
+Если пользователь переходит с сайта по товарной ссылке, бот открывает сценарий, привязанный к конкретной позиции.
 
-```powershell
-npm start
-```
+Обычно в этом сценарии пользователь видит:
+- название товара
+- артикул
+- цену
+- ссылку на товар
+- кнопки дальнейших действий
 
-## Project structure
+### 2. Технические характеристики
+Отдельная ветка, в которой бот показывает сведения по товару:
+- описание
+- область применения
+- базовые характеристики
+- упаковку и единицы измерения
+- ссылки на документы
+
+### 3. Запрос счёта
+Пошаговый сценарий для оформления заявки:
+- тип клиента
+- количество
+- доставка
+- контакт
+- подтверждение заявки
+
+В полной рабочей версии проекта эта ветка может расширяться:
+- несколькими позициями в одном счёте
+- реквизитами для юрлица
+- способом оплаты
+- передачей вложений менеджеру
+
+### 4. Расчёт доставки
+Пользователь оставляет город, адрес и количество, после чего бот сохраняет предварительный запрос на доставку.
+
+### 5. Уточнение у менеджера
+Если вопрос нестандартный, бот собирает краткое описание задачи и передаёт обращение менеджеру.
+
+## Что используется в проекте
+
+### Технологии
+- `Node.js`
+- нативный `fetch`
+- Telegram Bot API
+- long polling
+- `ESM`-модули
+- локальное хранение runtime-состояния в JSON
+
+### Архитектурный подход
+Бот построен как прикладной сценарный сервис с простым state-machine подходом:
+- каждое действие пользователя переводит сценарий на следующий шаг
+- состояние пользователя хранится локально
+- кнопки и сообщения формируются отдельно от транспортного слоя
+- Telegram API обёрнут в отдельный клиент
+
+### Что это даёт
+- код проще поддерживать
+- сценарии легко расширять
+- поведение бота предсказуемо
+- проще тестировать ветки отдельно
+
+## Структура проекта
 
 ```text
 GITHUB/
-  .env.example
+  src/
+    index.js              # точка входа
+    bot.js                # основная логика сценариев
+    lib/
+      env.js              # загрузка и проверка переменных окружения
+      telegram-api.js     # обёртка над Telegram Bot API
+      utils.js            # вспомогательные функции
+    storage/
+      runtime-store.js    # локальное хранение состояния
+    ui/
+      keyboards.js        # inline-кнопки и меню
   .gitignore
   package.json
   README.md
   SECURITY_CHECKLIST.md
-  data/
-    .gitkeep
-  src/
-    index.js
-    bot.js
-    lib/
-      env.js
-      telegram-api.js
-      utils.js
-    storage/
-      runtime-store.js
-    ui/
-      keyboards.js
-```
-
-## What this starter does
-
-- `/start` shows a simple menu
-- the bot can answer button clicks
-- the user can leave a short request for a manager
-- the manager receives a structured Telegram message
-
-## Safe publishing rules
-
-Before uploading anything public, read [SECURITY_CHECKLIST.md](./SECURITY_CHECKLIST.md).
-
-The key rule is simple:
-
-**Upload only the contents of this `GITHUB` folder, not the root project.**
-
-## Notes
-
-This public starter is suitable if you want to:
-
-- show repository structure
-- publish a clean Telegram bot skeleton
-- share a hiring/demo version
-- avoid leaking private commercial logic
-
-If you want to publish the real production bot, use a **private repository**.
